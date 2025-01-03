@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Dash - Tourist Price Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Price Dash</h1>
+            <p class="subtitle">Find local prices anywhere in the world</p>
+        </header>
+
+        <main>
+            <div class="search-container">
+                <div class="search-box">
+                    <label for="location">Where are you going?</label>
+                    <input type="text" id="location" placeholder="Enter city name (e.g., New York, London)" autocomplete="off">
+                </div>
+
+                <div class="search-box" id="itemSearchBox" style="display: none;">
+                    <label for="item">What are you looking for?</label>
+                    <input type="text" id="item" placeholder="Enter item (e.g., coffee, taxi, bread)" autocomplete="off">
+                </div>
+            </div>
+
+            <div id="result" class="result-container"></div>
+        </main>
+    </div>
+
+    <script>
+        const locationInput = document.getElementById('location');
+        const itemSearchBox = document.getElementById('itemSearchBox');
+        const itemInput = document.getElementById('item');
+        const resultDiv = document.getElementById('result');
+
+        locationInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                itemSearchBox.style.display = 'block';
+            } else {
+                itemSearchBox.style.display = 'none';
+                resultDiv.innerHTML = '';
+            }
+        });
+
+        async function searchPrice() {
+            const location = locationInput.value.trim();
+            const item = itemInput.value.trim();
+
+            if (!location || !item) return;
+
+            try {
+                const response = await fetch(`/api/price?location=${encodeURIComponent(location)}&item=${encodeURIComponent(item)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="price-card">
+                            <h3>Price Information</h3>
+                            <p class="location">📍 ${location.charAt(0).toUpperCase() + location.slice(1)}</p>
+                            <p class="item">🏷️ ${item.charAt(0).toUpperCase() + item.slice(1)}</p>
+                            <p class="price">💰 ${data.avg_price} ${data.currency}</p>
+                            ${data.unit ? `<p class="unit">📏 ${data.unit}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">Failed to fetch price information</div>';
+            }
+        }
+
+        itemInput.addEventListener('input', debounce(searchPrice, 500));
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+</body>
+</html> 
