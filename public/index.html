@@ -16,9 +16,14 @@
 
         <main>
             <div class="search-container">
-                <div class="search-box">
+                <div class="search-box" id="locationBox">
                     <label for="location">Where are you going?</label>
                     <input type="text" id="location" placeholder="Enter city name (e.g., New York, London)" autocomplete="off">
+                </div>
+
+                <div class="selected-location" id="selectedLocation" style="display: none;">
+                    <p>📍 <span id="locationText"></span></p>
+                    <button id="changeLocation" class="change-btn">Change</button>
                 </div>
 
                 <div class="search-box" id="itemSearchBox" style="display: none;">
@@ -33,21 +38,62 @@
 
     <script>
         const locationInput = document.getElementById('location');
+        const locationBox = document.getElementById('locationBox');
+        const selectedLocation = document.getElementById('selectedLocation');
+        const locationText = document.getElementById('locationText');
+        const changeLocationBtn = document.getElementById('changeLocation');
         const itemSearchBox = document.getElementById('itemSearchBox');
         const itemInput = document.getElementById('item');
         const resultDiv = document.getElementById('result');
 
-        locationInput.addEventListener('input', function() {
-            if (this.value.trim() !== '') {
+        // Available locations from our data
+        const availableLocations = ['new york', 'london'];
+
+        async function checkLocation(location) {
+            const locationLower = location.toLowerCase();
+            if (availableLocations.includes(locationLower)) {
+                // Valid location
+                locationBox.style.display = 'none';
+                selectedLocation.style.display = 'flex';
                 itemSearchBox.style.display = 'block';
-            } else {
-                itemSearchBox.style.display = 'none';
+                locationText.textContent = location.charAt(0).toUpperCase() + location.slice(1);
                 resultDiv.innerHTML = '';
+            } else {
+                // Invalid location
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        Sorry, we don't have price data for ${location} yet.
+                        Available cities: New York, London
+                    </div>
+                `;
+                itemSearchBox.style.display = 'none';
+            }
+        }
+
+        locationInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim() !== '') {
+                checkLocation(this.value.trim());
             }
         });
 
+        locationInput.addEventListener('blur', function() {
+            if (this.value.trim() !== '') {
+                checkLocation(this.value.trim());
+            }
+        });
+
+        changeLocationBtn.addEventListener('click', function() {
+            locationBox.style.display = 'block';
+            selectedLocation.style.display = 'none';
+            itemSearchBox.style.display = 'none';
+            resultDiv.innerHTML = '';
+            locationInput.value = '';
+            itemInput.value = '';
+            locationInput.focus();
+        });
+
         async function searchPrice() {
-            const location = locationInput.value.trim();
+            const location = locationText.textContent.trim();
             const item = itemInput.value.trim();
 
             if (!location || !item) return;
@@ -60,7 +106,6 @@
                     resultDiv.innerHTML = `
                         <div class="price-card">
                             <h3>Price Information</h3>
-                            <p class="location">📍 ${location.charAt(0).toUpperCase() + location.slice(1)}</p>
                             <p class="item">🏷️ ${item.charAt(0).toUpperCase() + item.slice(1)}</p>
                             <p class="price">💰 ${data.avg_price} ${data.currency}</p>
                             ${data.unit ? `<p class="unit">📏 ${data.unit}</p>` : ''}

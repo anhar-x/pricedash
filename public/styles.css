@@ -139,4 +139,37 @@ input:focus {
     .price-card {
         padding: 1rem;
     }
+}
+
+.selected-location {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selected-location p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin: 0;
+}
+
+.change-btn {
+    background: #edf2f7;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    color: #4a5568;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.change-btn:hover {
+    background: #e2e8f0;
+    color: #2d3748;
 } 
