@@ -22,6 +22,11 @@ const priceData = {
         'coffee': { avg_price: 3.50, currency: 'GBP' },
         'taxi': { avg_price: 12.00, currency: 'GBP', unit: 'per 5km' },
         'bread': { avg_price: 2.20, currency: 'GBP' }
+    },
+    'calicut': {
+        'chai': {avg_price: 12, currency: 'INR'},
+        'rickshaw': {avg_price: 40, currency: 'INR', unit: 'per 2km'},
+        'bread': {avg_price: 30, currency: 'INR'},
     }
 };
 

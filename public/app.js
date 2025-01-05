@@ -8,7 +8,7 @@ const itemInput = document.getElementById('item');
 const resultDiv = document.getElementById('result');
 
 // Available locations from our data
-const availableLocations = ['new york', 'london'];
+const availableLocations = ['new york', 'london', 'calicut'];
 
 async function checkLocation(location) {
     const locationLower = location.toLowerCase();
